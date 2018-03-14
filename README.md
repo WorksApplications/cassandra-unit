@@ -4,6 +4,14 @@ WELCOME to CassandraUnit
 Everything is in the wiki : 
 https://github.com/jsevellec/cassandra-unit/wiki
 
+WorksApplication
+-----------------
+* We use tag `cassandra-unit-parent-3.1.3.2-sp1`
+* cassandra 3.11.2
+* cassandra driver 3.2.0
+* guava 18.0
+* netty-handler 4.0.44.Final
+
 What is it?
 -----------
 Like other *Unit projects, CassandraUnit is a Java utility test tool.
