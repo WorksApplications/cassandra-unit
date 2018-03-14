@@ -76,7 +76,7 @@ public class CassandraUnitCommandLineLoaderTest {
         String targetFileDataSet = FileTmpHelper.copyClassPathDataSetToTmpDirectory(this.getClass(),
                 "/cql/simpleWithKeyspaceCreation.cql");
         String host = "localhost";
-        String port = "9142";
+        String port = "9042";
         String[] args = {"-f", targetFileDataSet, "-h", host, "-p", port};
         CassandraUnitCommandLineLoader.main(args);
 
@@ -84,7 +84,7 @@ public class CassandraUnitCommandLineLoaderTest {
                 new com.datastax.driver.core.Cluster.Builder().addContactPoints(host).withPort(Integer.parseInt(port)).build();
         Session session = cluster.connect();
 
-        ResultSet result = session.execute("select * from mykeyspace.testCQLTable WHERE id=1690e8da-5bf8-49e8-9583-4dff8a570737");
+        ResultSet result = session.execute("select * from mykeyspace.test_cql_table WHERE id=1690e8da-5bf8-49e8-9583-4dff8a570737");
         String val = result.iterator().next().getString("value");
         Assert.assertThat("Cql loaded string",is(val));
 

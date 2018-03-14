@@ -77,7 +77,9 @@ public class EmbeddedCassandraServerHelper {
     public static void startEmbeddedCassandra(String yamlFile, String tmpDir, long timeout) throws TTransportException, IOException, ConfigurationException {
         if (cassandraDaemon != null) {
             /* nothing to do Cassandra is already started */
-            return;
+        	/* if cluster/session has been closed then reopen them*/
+            initCluster();
+        	return;
         }
 
         if (!StringUtils.startsWith(yamlFile, "/")) {
@@ -101,7 +103,10 @@ public class EmbeddedCassandraServerHelper {
     public static void startEmbeddedCassandra(File file, String tmpDir, long timeout) throws TTransportException, IOException, ConfigurationException {
         if (cassandraDaemon != null) {
             /* nothing to do Cassandra is already started */
-            return;
+        	/*if cluster/session has been closed then reopen session*/
+        	initCluster();
+
+        	return;
         }
 
         checkConfigNameForRestart(file.getAbsolutePath());
@@ -110,6 +115,7 @@ public class EmbeddedCassandraServerHelper {
         log.debug("Initialization needed");
 
         System.setProperty("cassandra.config", "file:" + file.getAbsolutePath());
+        System.setProperty("cassandra.storagedir","target/embeddedCassandra/");
         System.setProperty("cassandra-foreground", "true");
         System.setProperty("cassandra.native.epoll.enabled", "false"); // JNA doesnt cope with relocated netty
 
@@ -119,6 +125,8 @@ public class EmbeddedCassandraServerHelper {
             System.setProperty("log4j.configuration", "file:" + tmpDir + DEFAULT_LOG4J_CONFIG_FILE);
         }
 
+        DatabaseDescriptor.daemonInitialization();
+        
         cleanupAndLeaveDirs();
         final CountDownLatch startupLatch = new CountDownLatch(1);
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -127,7 +135,7 @@ public class EmbeddedCassandraServerHelper {
             public void run() {
                 cassandraDaemon = new CassandraDaemon();
                 cassandraDaemon.activate();
-                startupLatch.countDown();
+            	startupLatch.countDown();
             }
         });
         try {
@@ -136,17 +144,7 @@ public class EmbeddedCassandraServerHelper {
                 throw new AssertionError("Cassandra daemon did not start within timeout");
             }
 
-            QueryOptions queryOptions = new QueryOptions();
-            queryOptions.setRefreshSchemaIntervalMillis(0);
-            queryOptions.setRefreshNodeIntervalMillis(0);
-            queryOptions.setRefreshNodeListIntervalMillis(0);
-            cluster = com.datastax.driver.core.Cluster.builder()
-                .addContactPoints(EmbeddedCassandraServerHelper.getHost())
-                .withPort(EmbeddedCassandraServerHelper.getNativeTransportPort())
-                .withQueryOptions(queryOptions)
-                .build();
-
-            session = cluster.connect();
+            initCluster();
 
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 @Override
@@ -160,6 +158,24 @@ public class EmbeddedCassandraServerHelper {
             throw new AssertionError(e);
         } finally {
             executor.shutdown();
+        }
+    }
+
+    private static void initCluster(){
+    	QueryOptions queryOptions = new QueryOptions();
+        queryOptions.setRefreshSchemaIntervalMillis(0);
+        queryOptions.setRefreshNodeIntervalMillis(0);
+        queryOptions.setRefreshNodeListIntervalMillis(0);
+        if (cluster == null || cluster.isClosed()){
+        	cluster = com.datastax.driver.core.Cluster.builder()
+                    .addContactPoints(EmbeddedCassandraServerHelper.getHost())
+                    .withPort(EmbeddedCassandraServerHelper.getNativeTransportPort())
+                    .withQueryOptions(queryOptions)
+                    .build();
+        }
+
+        if (session == null || session.isClosed()){
+        	session = cluster.connect();
         }
     }
 
@@ -346,7 +362,7 @@ public class EmbeddedCassandraServerHelper {
     }
 
     public static void mkdirs() {
-        DatabaseDescriptor.createAllDirectories();
+         DatabaseDescriptor.createAllDirectories();
     }
 
     private static void readAndAdaptYaml(File cassandraConfig) throws IOException {

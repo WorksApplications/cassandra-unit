@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.cassandraunit</groupId>
         <artifactId>cassandra-unit-parent</artifactId>
-        <version>3.1.3.2</version>
+        <version>3.1.3.2-sp1</version>
     </parent>
     <groupId>org.cassandraunit</groupId>
     <artifactId>cassandra-unit</artifactId>
@@ -54,6 +54,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${cu.junit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${cu.ch.qos.logback}</version>
         </dependency> 
         <dependency>
             <groupId>org.apache.cassandra</groupId>
@@ -71,10 +76,6 @@
                 <exclusion>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>ch.qos.logback</groupId>
@@ -115,7 +116,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-handler</artifactId>
-            <version>4.0.27.Final</version>
+            <version>4.0.44.Final</version>
         </dependency>
 
         <!-- hamcrest could be moved to the test-scope. But as the examples do not declare hamcrest-deps in their pom, 

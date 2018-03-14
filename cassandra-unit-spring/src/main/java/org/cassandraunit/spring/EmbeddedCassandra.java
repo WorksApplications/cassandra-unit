@@ -22,4 +22,10 @@ public @interface EmbeddedCassandra {
   // cassandra configuration file
   String configuration() default EmbeddedCassandraServerHelper.DEFAULT_CASSANDRA_YML_FILE;
   long timeout() default EmbeddedCassandraServerHelper.DEFAULT_STARTUP_TIMEOUT;
+  
+  int port() default 9144;
+  
+  String host() default "127.0.0.1";
+  
+  String clusterName() default "Test Cluster";
 }

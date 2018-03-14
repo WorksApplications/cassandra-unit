@@ -26,7 +26,7 @@ public class CQLDataLoadTestWithNoKeyspaceDeletion {
     }
 
     private void test() {
-        final ResultSet result = cassandraCQLUnit.session.execute("SELECT * FROM testCQLTable WHERE id=1690e8da-5bf8-49e8-9583-4dff8a570737");
+        final ResultSet result = cassandraCQLUnit.session.execute("SELECT * FROM test_cql_table WHERE id=1690e8da-5bf8-49e8-9583-4dff8a570737");
 
         final String val = result.iterator().next().getString("value");
         assertEquals("Cql loaded string", val);

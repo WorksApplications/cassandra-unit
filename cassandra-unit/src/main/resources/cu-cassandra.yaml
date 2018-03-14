@@ -38,8 +38,6 @@ hinted_handoff_throttle_in_kb: 1024
 # cross-dc handoff tends to be slower
 max_hints_delivery_threads: 2
 
-hints_directory: target/embeddedCassandra/hints
-
 # The following setting populates the page cache on memtable flush and compaction
 # WARNING: Enable this setting only when the whole node's data fits in memory.
 # Defaults to: false
@@ -101,7 +99,6 @@ data_file_directories:
 # commit log
 commitlog_directory: target/embeddedCassandra/commitlog
 
-cdc_raw_directory: target/embeddedCassandra/cdc
 
 # policy for data disk failures:
 # stop: shut down gossip and Thrift, leaving the node effectively dead, but
@@ -165,6 +162,7 @@ row_cache_save_period: 0
 
 # saved caches
 saved_caches_directory: target/embeddedCassandra/saved_caches
+
 
 # commitlog_sync may be either "periodic" or "batch."
 # When in batch mode, Cassandra won't ack writes until the commit log
@@ -270,7 +268,7 @@ listen_address: 127.0.0.1
 
 start_native_transport: true
 # port for the CQL native transport to listen for clients on
-native_transport_port: 9142
+native_transport_port: 9042
 
 # Whether to start the thrift rpc server.
 start_rpc: true
@@ -523,6 +521,7 @@ dynamic_snitch_badness_threshold: 0.1
 # request_scheduler_id. The scheduler is further customized by
 # request_scheduler_options as described below.
 request_scheduler: org.apache.cassandra.scheduler.NoScheduler
+
 
 # Scheduler Options vary based on the type of scheduler
 # NoScheduler - Has no options
